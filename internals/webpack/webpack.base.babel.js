@@ -18,6 +18,11 @@ module.exports = (options) => ({
       exclude: /node_modules/,
       query: options.babelQuery,
     }, {
+      // Transform our own .css files with PostCSS and CSS-modules
+      test: /\.css$/,
+      exclude: /node_modules/,
+      loader: options.cssLoaders,
+    }, {
       // Do not transform vendor's CSS with CSS-modules
       // The point is that they remain in global scope.
       // Since we require these CSS files in our JS or CSS files,
