@@ -10,15 +10,26 @@
  */
 
 import React from 'react';
-import { FormattedMessage } from 'react-intl';
-import messages from './messages';
+import ReactMixin from 'react-mixin';
+import ReactFireMixin from 'reactfire';
+
 
 export default class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+
+  componentWillMount() {
+    this.state = {
+      homeMessage: {},
+    };
+    const ref = firebase.database().ref('home_message');// eslint-disable-line
+    this.bindAsObject(ref, 'homeMessage');
+  }
+
   render() {
     return (
       <h1>
-        <FormattedMessage {...messages.header} />
+        { this.state.homeMessage['.value'] }
       </h1>
     );
   }
 }
+ReactMixin(HomePage.prototype, ReactFireMixin);// eslint-disable-line

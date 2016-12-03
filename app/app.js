@@ -12,6 +12,22 @@ import '!file?name=[name].[ext]!./manifest.json';
 import 'file?name=[name].[ext]!./.htaccess';
 /* eslint-enable import/no-unresolved, import/extensions */
 
+
+import Firebase from 'firebase';
+
+// <script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
+
+  // Initialize Firebase
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyCOQSawXkDVn8JCDz8HlGFoQ0cDWvwPuw8',
+  authDomain: 'nekojima-adf93.firebaseapp.com',
+  databaseURL: 'https://nekojima-adf93.firebaseio.com',
+  storageBucket: 'nekojima-adf93.appspot.com',
+  messagingSenderId: '611165243016',
+};
+Firebase.initializeApp(FIREBASE_CONFIG);
+window.firebase = Firebase;
+
 // Import all the third party stuff
 import React from 'react';
 import ReactDOM from 'react-dom';
