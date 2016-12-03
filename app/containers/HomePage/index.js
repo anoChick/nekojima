@@ -12,6 +12,7 @@
 import React from 'react';
 import ReactMixin from 'react-mixin';
 import ReactFireMixin from 'reactfire';
+import AppBar from 'material-ui/AppBar';
 
 export default class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
@@ -26,6 +27,9 @@ export default class HomePage extends React.PureComponent { // eslint-disable-li
   render() {
     return (
       <div>
+        <AppBar
+          title="Title"
+        />
         <h1>
           { this.state.homeMessage['.value'] }
         </h1>
