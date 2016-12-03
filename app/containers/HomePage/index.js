@@ -13,7 +13,6 @@ import React from 'react';
 import ReactMixin from 'react-mixin';
 import ReactFireMixin from 'reactfire';
 
-
 export default class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
   componentWillMount() {
@@ -26,9 +25,11 @@ export default class HomePage extends React.PureComponent { // eslint-disable-li
 
   render() {
     return (
-      <h1>
-        { this.state.homeMessage['.value'] }
-      </h1>
+      <div>
+        <h1>
+          { this.state.homeMessage['.value'] }
+        </h1>
+      </div>
     );
   }
 }
