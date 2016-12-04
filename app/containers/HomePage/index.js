@@ -8,7 +8,7 @@
  * reloading is not a necessity for you then you can refactor it and remove
  * the linting exception.
  */
-
+/* eslint-disable */
 import React from 'react';
 import ReactMixin from 'react-mixin';
 import ReactFireMixin from 'reactfire';
@@ -18,48 +18,72 @@ import Drawer from 'material-ui/Drawer';
 import MenuItem from 'material-ui/MenuItem';
 import Paper from 'material-ui/Paper';
 import Divider from 'material-ui/Divider';
+import Dialog from 'material-ui/Dialog';
+import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
-
+import Channel from 'components/Channel';
+import ChannelList from 'components/ChannelList';
 const style = {
   marginRight: 20,
 };
 export default class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
-
-  static propTypes = {
-  children: React.PropTypes.any
-  };
-
-  static childContextTypes = {
-    muiTheme: React.PropTypes.object.isRequired,
-  };
+  changeChannel = (item) => {
+    this.unbind("channel");
+    const ref2 = firebase.database().ref('channels/'+ item['.value']);// eslint-disable-line
+    this.bindAsArray(ref2.limitToLast(1000), 'channel');
+    this.setState({currentChannelName:item['.value']});
+    this.setState({open:false});
+  }
+  fabo = (item) => {
+    let targetItem = this.state.channel.find(function(element, index, array){
+      return element['.key'] == item['.key']
+    });
+    targetItem.fabo = targetItem.fabo + 1;
+    this.setState({channel: this.state.channel}) ;
+  }
 
   constructor(props){
     super(props);
     this.state = {
-      open: false
+      message:'',
+      open: false,
+      currentChannelName:'default',
+      homeMessage: {},
+      channelNames:[],
+      channel:[],
     };
-  }
-  getStyles(){
-    const styles = {
-      appBar: {
-        display: 'flex'
-      }
-    };
-    return styles;
   }
 
   leftButtonTouched = () => this.setState({open: !this.state.open});
 
-  menuItemTouched = (e) => {
-    this.setState({open: !this.state.open});
-  }
   componentWillMount() {
-    this.state = {
-      homeMessage: {},
-    };
-    const ref = firebase.database().ref('home_message');// eslint-disable-line
-    this.bindAsObject(ref, 'homeMessage');
+
+    const ref1 = firebase.database().ref('home_message');// eslint-disable-line
+    this.bindAsObject(ref1, 'homeMessage');
+    const ref2 = firebase.database().ref('channels/default');// eslint-disable-line
+    this.bindAsArray(ref2.limitToLast(1000), 'channel');
+
+
   }
+  submit = () => {
+    if(this.state.message==''){
+      return;
+    }
+    this.firebaseRefs['channel'].push({
+      index: this.state.channel.length + 1,
+      message: this.state.message,
+      posted_at:(new Date()).toLocaleString(),
+      fabo:0,
+    });
+    this.setState({
+        message: '',
+    });
+  }
+  onChange = (e) => {
+    this.setState({
+        message: e.target.value,
+      });
+  };
 
   render() {
     return (
@@ -69,35 +93,35 @@ export default class HomePage extends React.PureComponent { // eslint-disable-li
           title="ねこじま"
           iconClassNameRight="muidocs-icon-navigation-expand-more"
         />
-        <h1>
-          { this.state.homeMessage['.value'] }
-        </h1>
+
+        <div style={{padding:30}}>
+        <h2>{this.state.currentChannelName}</h2>
+        <Divider />
+        <br />
         <Paper zDepth={1} style= { {padding:'0 8px 8px 8px'} } >
         <TextField
           hintText="にゃーん"
+          value={ this.state.message }
           multiLine={true}
           rows={3}
+          name='iii'
           fullWidth
+          onChange={ this.onChange }
         />
-        <RaisedButton label="投稿" fullWidth primary />
+        <RaisedButton label="投稿" fullWidth primary onClick={ this.submit } />
         </Paper>
+        <br />
+        <Divider />
+        <br />
         <Drawer
           open={this.state.open}
           docked={false}
-          width={200}
+          width={300}
           onRequestChange={open => this.setState({open})}>
-
+          <ChannelList items={ this.state.channelNames }  changeChannel={ this.changeChannel.bind(this) } />
         </Drawer>
-        <Paper zDepth={2}>
-          <p> Neko</p>
-          <Divider />
-          <TextField hintText="Middle name" style={style} underlineShow={false} />
-          <Divider />
-          <TextField hintText="Last name" style={style} underlineShow={false} />
-          <Divider />
-          <TextField hintText="Email address" style={style} underlineShow={false} />
-          <Divider />
-        </Paper>
+        <Channel fabo ={ this.fabo.bind(this) } channelName={this.state.currentChannelName} items={ this.state.channel }/>
+        </div>
       </div>
     );
   }
