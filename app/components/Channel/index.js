@@ -3,48 +3,61 @@
  */
 /* eslint-disable */
 import React from 'react';
+import ReactMixin from 'react-mixin';
+import ReactFireMixin from 'reactfire';
 import Divider from 'material-ui/Divider';
 import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
 import ActionGrade from 'material-ui/svg-icons/action/grade';
 import RaisedButton from 'material-ui/RaisedButton';
+import Post from 'components/Post';
+
 export default class Channel extends React.Component {
 
   constructor(props){
     super(props);
 
     this.state = {
-      items: props.items,
-      newChannelName: '',
       open: false,
+      channel:[],
+      faboTarget:{},
     };
   }
 
+  componentWillReceiveProps(nextProps){
+    this.unbind("channel");
+    this.firebaseRef = firebase.database().ref('channels/'+ nextProps.channelName);// eslint-disable-line
+    this.bindAsArray(this.firebaseRef, 'channel');
+  }
+  componentWillMount() {
+    this.firebaseRef = firebase.database().ref('channels/'+this.props.channelName);// eslint-disable-line
+    this.bindAsArray(this.firebaseRef, 'channel');
+
+
+  }
   createItem = (item,index) => {
     return (
-      <div style={{ padding: 8 }} key={index} >
-        <h5>:{ item.index }　<small>{item.posted_at}</small></h5>
-        <p>{ item.message }</p>
-        <Divider />
-      </div>
+      <Post key={item['.key']} postKey={item['.key']} channelName={this.props.channelName} />
     );
   }
   render() {
-    const { items } = this.props;
+    const { channel } = this.state;
     const content = (
       <div>
         <Paper zDepth={1}>
-          { this.props.items.reverse().map(this.createItem) }
+          { channel.reverse().map(this.createItem) }
         </Paper>
       </div>
     );
-    items.reverse();
+    channel.reverse();
     return content;
   }
 }
 
+ReactMixin(Channel.prototype, ReactFireMixin);// eslint-disable-line
+
 Channel.propTypes = {
   items: React.PropTypes.array,
   fabo : React.PropTypes.func,
-  currentChannelName: React.PropTypes.string,
+  channelName: React.PropTypes.string,
 };

@@ -30,7 +30,6 @@ export default class ChannelList extends React.Component {
   handleClose = () => {
     this.setState({ open: false });
   };
-
   componentWillMount() {
     const ref3 = firebase.database().ref('channel_names');// eslint-disable-line
     this.bindAsArray(ref3, 'channelNames');
@@ -42,7 +41,7 @@ export default class ChannelList extends React.Component {
         primaryText={ channelName['.value'] }
 
         key={ index }
-        onClick = { this.props.changeChannel.bind(null, channelName) }
+        onClick = { this.props.changeChannel.bind(this, channelName) }
       />
     );
   }
@@ -105,7 +104,6 @@ export default class ChannelList extends React.Component {
 
       </div>
     );
-    this.props.items.reverse()
     return content;
   }
 }

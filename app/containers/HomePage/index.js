@@ -23,33 +23,31 @@ import FlatButton from 'material-ui/FlatButton';
 import RaisedButton from 'material-ui/RaisedButton';
 import Channel from 'components/Channel';
 import ChannelList from 'components/ChannelList';
+import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
+import { createStructuredSelector } from 'reselect';
+
 const style = {
   marginRight: 20,
 };
-export default class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
+export class HomePage extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
   changeChannel = (item) => {
+    this.props.changeRoute(item['.value']);
+
     this.unbind("channel");
     const ref2 = firebase.database().ref('channels/'+ item['.value']);// eslint-disable-line
-    this.bindAsArray(ref2.limitToLast(1000), 'channel');
+    this.bindAsArray(ref2, 'channel');
     this.setState({currentChannelName:item['.value']});
     this.setState({open:false});
   }
-  fabo = (item) => {
-    let targetItem = this.state.channel.find(function(element, index, array){
-      return element['.key'] == item['.key']
-    });
-    targetItem.fabo = targetItem.fabo + 1;
-    this.setState({channel: this.state.channel}) ;
-  }
+
 
   constructor(props){
     super(props);
     this.state = {
       message:'',
       open: false,
-      currentChannelName:'default',
-      homeMessage: {},
-      channelNames:[],
+      currentChannelName:props.params.splat||'default',
       channel:[],
     };
   }
@@ -57,11 +55,8 @@ export default class HomePage extends React.PureComponent { // eslint-disable-li
   leftButtonTouched = () => this.setState({open: !this.state.open});
 
   componentWillMount() {
-
-    const ref1 = firebase.database().ref('home_message');// eslint-disable-line
-    this.bindAsObject(ref1, 'homeMessage');
-    const ref2 = firebase.database().ref('channels/default');// eslint-disable-line
-    this.bindAsArray(ref2.limitToLast(1000), 'channel');
+    const ref2 = firebase.database().ref('channels/'+this.state.currentChannelName);// eslint-disable-line
+    this.bindAsArray(ref2, 'channel');
 
 
   }
@@ -118,12 +113,29 @@ export default class HomePage extends React.PureComponent { // eslint-disable-li
           docked={false}
           width={300}
           onRequestChange={open => this.setState({open})}>
-          <ChannelList items={ this.state.channelNames }  changeChannel={ this.changeChannel.bind(this) } />
+          <ChannelList changeChannel={ this.changeChannel.bind(this) } />
         </Drawer>
-        <Channel fabo ={ this.fabo.bind(this) } channelName={this.state.currentChannelName} items={ this.state.channel }/>
+        <Channel channelName={this.state.currentChannelName}/>
         </div>
       </div>
     );
   }
 }
 ReactMixin(HomePage.prototype, ReactFireMixin);// eslint-disable-line
+HomePage.propTypes = {
+  changeRoute: React.PropTypes.func,
+};
+export function mapDispatchToProps(dispatch) {
+  return {
+    changeRoute: (url) => dispatch(push(url)),
+    dispatch,
+  };
+}
+
+const mapStateToProps = createStructuredSelector({
+
+});
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(HomePage);
