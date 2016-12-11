@@ -12,7 +12,7 @@
  */
 
 import React from 'react';
-
+import styles from './styles.css';// eslint-disable-line
 export default class App extends React.PureComponent { // eslint-disable-line react/prefer-stateless-function
 
   static propTypes = {

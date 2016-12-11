@@ -12,21 +12,38 @@ import '!file?name=[name].[ext]!./manifest.json';
 import 'file?name=[name].[ext]!./.htaccess';
 /* eslint-enable import/no-unresolved, import/extensions */
 
+
+import Firebase from 'firebase';
+
+// <script src="https://www.gstatic.com/firebasejs/3.6.2/firebase.js"></script>
+
+  // Initialize Firebase
+const FIREBASE_CONFIG = {
+  apiKey: 'AIzaSyCOQSawXkDVn8JCDz8HlGFoQ0cDWvwPuw8',
+  authDomain: 'nekojima-adf93.firebaseapp.com',
+  databaseURL: 'https://nekojima-adf93.firebaseio.com',
+  storageBucket: 'nekojima-adf93.appspot.com',
+  messagingSenderId: '611165243016',
+};
+Firebase.initializeApp(FIREBASE_CONFIG);
+window.firebase = Firebase;
+
 // Import all the third party stuff
 import React from 'react';
 import ReactDOM from 'react-dom';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { Provider } from 'react-redux';
 import { applyRouterMiddleware, Router, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import { useScroll } from 'react-router-scroll';
 import LanguageProvider from 'containers/LanguageProvider';
 import configureStore from './store';
-
+import injectTapEventPlugin from 'react-tap-event-plugin';
+injectTapEventPlugin();
 // Import i18n messages
 import { translationMessages } from './i18n';
 
 // Import the CSS reset, which HtmlWebpackPlugin transfers to the build folder
-import 'sanitize.css/sanitize.css';
 
 // Create redux store with history
 // this uses the singleton browserHistory provided by react-router
@@ -54,19 +71,21 @@ const rootRoute = {
 
 const render = (translatedMessages) => {
   ReactDOM.render(
-    <Provider store={store}>
-      <LanguageProvider messages={translatedMessages}>
-        <Router
-          history={history}
-          routes={rootRoute}
-          render={
-            // Scroll to top when going to a new page, imitating default browser
-            // behaviour
-            applyRouterMiddleware(useScroll())
-          }
-        />
-      </LanguageProvider>
-    </Provider>,
+    <MuiThemeProvider>
+      <Provider store={store}>
+        <LanguageProvider messages={translatedMessages}>
+          <Router
+            history={history}
+            routes={rootRoute}
+            render={
+              // Scroll to top when going to a new page, imitating default browser
+              // behaviour
+              applyRouterMiddleware(useScroll())
+            }
+          />
+        </LanguageProvider>
+      </Provider>
+    </MuiThemeProvider>,
     document.getElementById('app')
   );
 };
@@ -100,5 +119,5 @@ if (!window.Intl) {
 // Install ServiceWorker and AppCache in the end since
 // it's not most important operation and if main code fails,
 // we do not want it installed
-import { install } from 'offline-plugin/runtime';
-install();
+// import { install } from 'offline-plugin/runtime';
+// install();

@@ -15,6 +15,7 @@ module.exports = require('./webpack.base.babel')({
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].chunk.js',
   },
+  cssLoaders: 'style-loader!css-loader?localIdentName=[local]__[path][name]__[hash:base64:5]&modules&importLoaders=1&sourceMap!postcss-loader',
 
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
@@ -25,7 +26,7 @@ module.exports = require('./webpack.base.babel')({
     }),
 
     // Merge all duplicate modules
-    new webpack.optimize.DedupePlugin(),
+    // new webpack.optimize.DedupePlugin(),
 
     // Minify and optimize the index.html
     new HtmlWebpackPlugin({
